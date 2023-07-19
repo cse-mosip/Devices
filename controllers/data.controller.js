@@ -6,12 +6,28 @@ const mdsService = require("../services/mds.service");
 const test_device = async (req, res) => {
     try {
         let device = await mdsService.findDevice(req.body);
-        // console.log(device);
-        res.status(200).json(device.data);
+
+        if (device.data[0].deviceStatus === "Ready") {
+
+            res.status(200).json({ 
+                success: true,
+                device: device.data[0]
+            });
+        }
+        else {
+
+            res.status(400).json({ 
+                success: false,
+                error: 'Device not ready' 
+            });
+        }
     } 
     catch (error) {
-        // console.log(error);
-        res.status(500).json({ error: error.message });
+        
+        res.status(500).json({ 
+            success: false,
+            error: error.message 
+        });
     }
 };
 
