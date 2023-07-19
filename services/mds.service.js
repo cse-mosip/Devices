@@ -26,12 +26,35 @@ const findDevice = async (typeInfo) => {
     });
 }
 
+// TODO: use jwt decrypt as a helper for deviceInfo
 const deviceInfo = async () => {
 
+    return axios({
+        method: 'MOSIPDINFO',
+        url: Constatnts.BASE_PORT_URL + "info"
+    })
+    .then((res) => {
+        return res;
+    })
+    .catch((err) => {
+        throw err;
+    });
 }
 
-const capture = async () => {
+// TODO: use jwt decrypt as a helper for bioInfo
+const capture = async (captureInfo) => {
 
+    return axios({
+        method: 'CAPTURE',
+        url: Constatnts.BASE_PORT_URL + "capture",
+        data: captureInfo
+    })
+    .then((res) => {
+        return res;
+    })
+    .catch((err) => {
+        throw err;
+    });
 }
 
 const registrationCapture = async () => {
