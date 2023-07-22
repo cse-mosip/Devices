@@ -5,12 +5,13 @@ const mdsService = require("../services/mds.service");
 //test endpoints
 const test_device = async (req, res) => {
 
-    // let testBody = {
-    //     "type": "Biometric Device"
-    // }
+    let testBody = {
+        "type": "Biometric Device"
+    }
+    // console.log(new Date().toISOString());
 
     try {
-        let device = await mdsService.findDevice(req.body);
+        let device = await mdsService.findDevice(testBody);
 
         if (device.data[0].deviceStatus === "Ready") {
 
@@ -57,7 +58,7 @@ const test_capture = async (req, res) => {
                 "requestedScore": "80",
                 "deviceId": "4856814",
                 "deviceSubId": "0",
-                "previousHash": ""
+                "previousHash": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
             }
         ],
         "customOpts": null,
@@ -98,7 +99,19 @@ const test_capture = async (req, res) => {
     }
 };
 
+//get device info
+const get_info = async (req, res) => {
+    try {
+        let info = await mdsService.deviceInfo();
+        console.log(info);
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 module.exports = {
     test_device,
     test_capture,
+    get_info,
 };
