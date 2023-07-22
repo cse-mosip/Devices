@@ -3,7 +3,7 @@ require("dotenv").config();
 const mdsService = require("../services/mds.service");
 
 //test endpoints
-const test_device = async (req, res) => {
+const discover = async (req, res) => {
 
     let testBody = {
         "type": "Biometric Device"
@@ -38,7 +38,7 @@ const test_device = async (req, res) => {
 };
 
 //tested only one
-const test_capture = async (req, res) => {
+const capture = async (req, res) => {
 
     let testBody = {
         "env": "Staging",
@@ -100,7 +100,7 @@ const test_capture = async (req, res) => {
 };
 
 //get device info
-const get_info = async (req, res) => {
+const info = async (req, res) => {
     try {
         let info = await mdsService.deviceInfo();
         console.log(info);
@@ -111,7 +111,7 @@ const get_info = async (req, res) => {
 }
 
 module.exports = {
-    test_device,
-    test_capture,
-    get_info,
+    discover,
+    capture,
+    info,
 };

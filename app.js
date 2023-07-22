@@ -4,7 +4,8 @@ const cors = require('cors');
 // environmental variables
 require('dotenv').config();
 
-const dataRoutes = require('./routes/data.route');
+const authRoutes = require('./routes/auth.route');
+const regRoutes = require('./routes/reg.route');
 
 const makeApp = () => {
     // express app
@@ -42,7 +43,8 @@ const makeApp = () => {
     });
 
     //routes
-    app.use('/data', dataRoutes);
+    app.use('/auth', authRoutes);
+    app.use('/reg', regRoutes);
 
     return app;
 }
