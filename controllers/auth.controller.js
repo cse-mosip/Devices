@@ -1,6 +1,20 @@
 require("dotenv").config();
 
+// const jwksClient = require('jwks-rsa');
+const jwt = require('jsonwebtoken');
+
 const mdsService = require("../services/mds.service");
+
+// const client = jwksClient({
+//     jwksUri: 'https://sandrino.auth0.com/.well-known/jwks.json'
+// });
+
+// function getKey(header, callback){
+//     client.getSigningKey(header.kid, function(err, key) {
+//         var signingKey = key.getPublicKey();
+//         callback(null, signingKey);
+//     });
+// }
 
 //test endpoints
 const discover = async (req, res) => {
@@ -72,7 +86,7 @@ const capture = async (req, res) => {
     try {
 
         // let info = await mdsService.capture(req.body);
-        let info = await mdsService.capture(testBody);
+        let info = await mdsService.capture(req.body);
         // console.log(info.data.biometrics[0].error);
 
         if (info.data.biometrics[0].error.errorInfo === "Success") {
@@ -103,10 +117,28 @@ const capture = async (req, res) => {
 const info = async (req, res) => {
     try {
         let info = await mdsService.deviceInfo();
-        console.log(info);
+
+        if (info.status == 200){
+            const deviceInfoEncoded = info.data[0].deviceInfo;
+
+            const [headerEncoded, payloadEncoded] = deviceInfoEncoded.split('.');
+
+            const header = JSON.parse(Buffer.from(headerEncoded, 'base64').toString('utf-8'));
+            const payload = JSON.parse(Buffer.from(payloadEncoded, 'base64').toString('utf-8'));
+
+            // console.log(payload);
+            res.status(200).send({
+                deviceInfo: payload,
+                error: info.data[0].error
+            });
+        }
         
     } catch (error) {
-        console.log(error.message);
+        // console.log(error.message);
+        res.status(400).json({ 
+            success: false,
+            error: error.message 
+        });
     }
 }
 
