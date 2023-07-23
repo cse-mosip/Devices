@@ -1,8 +1,20 @@
 const axios = require('axios');
+// const jwksClient = require('jwks-rsa');
+const jwt = require('jsonwebtoken');
+// const client = jwksClient({
+//     jwksUri: 'https://sandrino.auth0.com/.well-known/jwks.json'
+// });
 
-const Constatnts = require('../helpers/constants');
+// function getKey(header, callback){
+//     client.getSigningKey(header.kid, function(err, key) {
+//         var signingKey = key.getPublicKey();
+//         callback(null, signingKey);
+//     });
+// }
 
-const findDevice = async (typeInfo) => {
+const Constants = require('../helpers/constants');
+
+const findDevice = async (typeInfo, mds_port) => {
 
     // try {
     //     const res = await axios.post(Constatnts.BASE_PORT_URL + "device", typeInfo);
@@ -15,7 +27,7 @@ const findDevice = async (typeInfo) => {
 
     return axios({
         method: 'MOSIPDISC',
-        url: Constatnts.BASE_PORT_URL + "device",
+        url: Constants.BASE_URL + ":" + mds_port + "/device",
         data: typeInfo
     })
     .then((res) => {
@@ -26,18 +38,25 @@ const findDevice = async (typeInfo) => {
     });
 }
 
-// TODO: use jwt decrypt as a helper for deviceInfo
-const deviceInfo = async () => {
+const deviceInfo = async (mds_port) => {
 
     return axios({
         method: 'MOSIPDINFO',
-        url: Constatnts.BASE_PORT_URL + "info"
+        url: Constants.BASE_URL + ":" + mds_port + "/info"
     })
     .then((res) => {
-        return res;
+        const deviceInfoEncoded = res.data[0].deviceInfo;
+        const error = res.data[0].error;
+
+        const [headerEncoded, payloadEncoded] = deviceInfoEncoded.split('.');
+
+        const header = JSON.parse(Buffer.from(headerEncoded, 'base64').toString('utf-8'));
+        const payload = JSON.parse(Buffer.from(payloadEncoded, 'base64').toString('utf-8'));
+        return { header, payload, error };
     })
     .catch((err) => {
-        throw err;
+        return err.message;
+        // throw err;
     });
 }
 
@@ -46,7 +65,7 @@ const capture = async (captureInfo) => {
 
     return axios({
         method: 'CAPTURE',
-        url: Constatnts.BASE_PORT_URL + "capture",
+        url: Constants.BASE_PORT_URL + "capture",
         data: captureInfo
     })
     .then((res) => {
@@ -57,11 +76,31 @@ const capture = async (captureInfo) => {
     });
 }
 
-const registrationCapture = async () => {
+const rCapture = async (rCaptureInfo) => {
+    return axios({
+        method: 'RCAPTURE',
+        url: Constants.BASE_PORT_URL_2 + "capture",
+        data: rCaptureInfo
+    })
+    .then((res) => {
+        console.log(length(res.data.biometrics));
+        console.log(res.data.biometrics);
+        // const deviceRCaptureEncoded = res.data[0].deviceInfo;
+        // const error = res.data[0].error;
 
+        // const [headerEncoded, payloadEncoded] = deviceInfoEncoded.split('.');
+
+        // const header = JSON.parse(Buffer.from(headerEncoded, 'base64').toString('utf-8'));
+        // const payload = JSON.parse(Buffer.from(payloadEncoded, 'base64').toString('utf-8'));
+        // return { header, payload, error };
+    })
+    .catch((err) => {
+        console.log(err.message);
+        // throw err;
+    });
 }
 
-const deviceStream = async () => {
+const stream = async () => {
 
 }
 
@@ -69,6 +108,6 @@ module.exports = {
     findDevice,
     deviceInfo,
     capture,
-    registrationCapture,
-    deviceStream,
+    rCapture,
+    stream,
 };

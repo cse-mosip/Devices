@@ -1,4 +1,6 @@
+const dataRouteDocs = require('./data.doc');
 const authRouteDocs = require('./auth.doc');
+const regRouteDocs = require('./reg.doc');
 
 const port = process.env.PORT || 5000;
 
@@ -17,16 +19,22 @@ const documentation = {
         ],
         tags: [
             {
-                name: "Auth",
-                description: "Authentication Routes"
+                name: "Data",
+                description: "Device Data Routes"
             },
             {
-                name: "Register",
+                name: "Registration",
                 description: "Registration Routes"
-            }
+            },
+            {
+                name: "Authentication",
+                description: "Authentication Routes"
+            },
         ],
         paths: {
+            ...dataRouteDocs,
             ...authRouteDocs,
+            ...regRouteDocs
         }
     },
     apis: ["./routes/*.js"]

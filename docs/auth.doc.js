@@ -1,47 +1,6 @@
-const getInfo = {
-    tags: ["Auth"],
-    description: "The device information API would be used to identify the MOSIP-compliant devices and their status by the applications.",
-    responses: {
-        200: {
-            description: "OK",
-            content: {
-                "application/json": {
-                    schema: {
-                        type: "array",
-                        example: [
-                            {
-                              "deviceInfo": {
-                                "deviceStatus": "Current status",
-                                "deviceId": "Internal ID",
-                                "firmware": "Firmware version",
-                                "certification": "Certification level",
-                                "serviceVersion": "Device service version",
-                                "deviceSubId": ["Array of supported device sub Ids"],
-                                "callbackId": "Baseurl to reach the device",
-                                "digitalId": "Signed digital id as described in the digital id section of this document.",
-                                "deviceCode": "Same as serialNo in digital ID",
-                                "env": "Target environment",
-                                "purpose": "Auth or Registration",
-                                "specVersion": ["Array of supported MDS specification version"],
-                              },
-                              "error": {
-                                "errorCode": "101",
-                                "errorInfo": "Invalid JSON Value "
-                              }
-                            },
-                          ]
-                    }
-                }
-            }
-        },
-        400: {
-            description: "Bad Request"
-        }
-    }
-}
 
 const postCapture = {
-    tags: ["Auth"],
+    tags: ["Authentication"],
     description: "The capture request would be used to capture a biometric from MOSIP-compliant devices by the applications. The captured call will respond with success to only one call at a time. So, in case of a parallel call, the device info details are sent with the status 'Busy'.",
     requestBody: {
         required: true,
@@ -94,7 +53,7 @@ const postCapture = {
                                     count: {
                                         type: "string",
                                         description: "Finger/Iris count, in case of face max, is set to 1",
-                                        example: 10
+                                        example: 1
                                     },
                                     bioSubType: {
                                         type: "array",
@@ -127,7 +86,7 @@ const postCapture = {
                                     previousHash: {
                                         type: "string",
                                         description: "Hash of the previous block",
-                                        example: "E3B0C44298FC1C149AFBF4C8996FB92427AE41E76649B564CA495991B7852B855"
+                                        example: ""
                                     }
                                 },
                                 required: ["type", "count", "bioSubType", "requestedScore", "deviceId"]
@@ -189,70 +148,10 @@ const postCapture = {
     }
 }
 
-const postDiscover = {
-    tags: ["Auth"],
-    description: "Discovery will return the appId of the discovered items. Users will be given a choice to choose one of the discovered SBI app. The selected app responds back to the intent using the default intent callback functionality.",
-    requestBody: {
-        required: true,
-        content: {
-            "application/json": {
-                schema: {
-                    type: "object",
-                    properties: {
-                        type: {
-                            type: "string",
-                            description: "type of the device",
-                            example: "Biometric Device"
-                        }
-                    }
-                }
-            }
-        }
-    },
-    responses: {
-        200: {
-            description: "OK",
-            content: {
-                "application/json": {
-                    schema: {
-                        type: "array",
-                        example: [
-                            {
-                                "deviceId": "Internal ID",
-                                "deviceStatus": "Device status",
-                                "certification": "Certification level",
-                                "serviceVersion": "Device service version",
-                                "deviceSubId": ["Array of supported device sub Ids"],
-                                "callbackId": "Base URL to reach the device",
-                                "digitalId": "Unsigned Digital ID of the device",
-                                "deviceCode": "Same as serialNo in digital ID",
-                                "specVersion": ["Array of supported MDS specification version"],
-                                "purpose": "Auth or Registration or empty if not registered",
-                                "error": {
-                                  "errorCode": "101",
-                                  "errorInfo": "Invalid JSON Value Type For Discovery.."
-                                }
-                              },
-                        ]
-                    }
-                }
-            }
-        },
-        400: {
-            description: "Bad Request"
-        }
-    }
-}
 
 const authDocs = {
-    "/auth/info": {
-        get: getInfo
-    },
     "/auth/capture": {
         post: postCapture
-    },
-    "/auth/discover": {
-        post: postDiscover
     },
 }
 

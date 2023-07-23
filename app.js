@@ -4,6 +4,7 @@ const cors = require('cors');
 // environmental variables
 require('dotenv').config();
 
+const dataRoutes = require('./routes/data.route');
 const authRoutes = require('./routes/auth.route');
 const regRoutes = require('./routes/reg.route');
 
@@ -37,12 +38,8 @@ const makeApp = () => {
         next();
     });
 
-    //root path
-    app.get('/', (req, res) => {
-        res.send("Welcome...");
-    });
-
     //routes
+    app.use('/', dataRoutes);
     app.use('/auth', authRoutes);
     app.use('/reg', regRoutes);
 
