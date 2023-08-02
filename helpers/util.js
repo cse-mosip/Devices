@@ -1,4 +1,4 @@
-var fs = require('fs')
+var fs = require('fs');
 const execSync = require("child_process").execSync;
 
 // Returns a Buffer object with the raw bytes of a jpg image of a fingerprint.
@@ -13,4 +13,34 @@ const extractImage = (bioValue, name) => {
     fs.unlinkSync(`./helpers/finger.jp2`)
 }
 
-module.exports = {extractImage};
+
+// no use yet
+const getConnectedPort = async () => {
+    const sp = require('serialport');
+
+    // List available ports
+    sp.SerialPort.list()
+    .then(ports => {
+        console.log(ports);
+        // Loop through the ports to find the fingerprint device
+        ports.forEach(port => {
+        if (port.manufacturer && port.manufacturer.includes('Mantra')) {
+            // Port with the fingerprint device found
+            console.log('Fingerprint device found on port:', port.path);
+
+            // Now you can use this port path to send requests to the fingerprint service
+            // For example, you can store this port path in a variable and use it later when needed.
+            const fingerprintDevicePort = port.path;
+            // Perform further actions with the fingerprintDevicePort, like connecting to the service.
+        }
+        });
+    })
+    .catch(err => {
+        console.error('Error listing ports:', err);
+    });
+}
+
+module.exports = { 
+    extractImage,
+    getConnectedPort
+};

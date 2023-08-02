@@ -1,5 +1,7 @@
 require("dotenv").config();
 
+const utils = require('../helpers/util');
+
 // const jwksClient = require('jwks-rsa');
 const jwt = require('jsonwebtoken');
 
@@ -30,52 +32,41 @@ const rInfo = async (req, res) => {
 }
 
 const rCapture = async (req, res) => {
-
-    let testBody = {
-        "env": "Staging",
-        "purpose": "Registration",
-        "specVersion": "0.9.5",
-        "timeout": 100000,
-        "captureTime": new Date().toISOString(),
-        "transactionId": "Trans123456",
-        "bio": [
-            {
-                "type": "Finger",
-                "count": "1",
-                "bioSubType": [
-                    
-                ],
-                "exception": null,
-                "requestedScore": "40",
-                "deviceId": "4722472",
-                "deviceSubId": "2",
-                "previousHash": ""
-            }
-        ],
-        "customOpts": null,
-    }
     
     try {
 
-        let info = await mdsService.rCapture(testBody);
+        let data = await mdsService.rCapture(req.body);
+        let bioValues = [];
 
-        if (info.data.biometrics[0].error.errorInfo === "Success") {
+        // console.log(data);
 
-            res.status(200).json({ 
-                success: true,
-                device: info.data.biometrics[0]
-            });
+        let error = false;
+
+        for (let i = 0; i < data.length; i++){
+            let fingerObj = data[i].data;
+            let errorObj = data[i].error;
+            if (errorObj.errorInfo !== 'Success'){
+                error = true;
+                break;
+            }
+
+            let bioValue = utils.extractImage(fingerObj.bioValue);
+            bioValues.push(bioValue);
+            // console.log(bioValue);
+
+        }
+
+        if (! error) {
+            res.status(200).json(data);
         }
         else {
-
             res.status(400).json({ 
                 success: false,
-                error: 'Biometric capture timeout' 
+                error: 'Biometric capture failed' 
             });
         }
     } 
     catch (error) {
-        
         res.status(500).json({ 
             success: false,
             error: error.message 

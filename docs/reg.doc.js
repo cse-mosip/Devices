@@ -116,52 +116,48 @@ const postRCapture = {
                         type: "array",
                         example: [
                             {
-                                "biometrics": [
-                                    {
-                                        "specVersion": "MDS Spec version",
-                                        "data": {
-                                            "digitalId": "Digital id of the device as per the Digital Id definition..",
-                                            "bioType": "Biometric type",
-                                            "deviceCode": "Same as serialNo in digital ID",
-                                            "deviceServiceVersion": "MDS version",
-                                            "bioSubType": "Left IndexFinger",
-                                            "purpose": "Auth or Registration",
-                                            "env": "Target environment",
-                                            "bioValue": "base64urlencoded biometrics (ISO format)",
-                                            "transactionId": "Unique transaction id sent in request",
-                                            "timestamp": "2019-02-15T10:01:57Z",
-                                            "requestedScore": "Floating point number to represent the minimum required score for the capture. This ranges from 0-100.",
-                                            "qualityScore": "Floating point number representing the score for the current capture. This ranges from 0-100."
-                                        },
-                                        "hash": "sha256 in hex format in upper case (previous 'hash' + sha256 hash of the current biometric ISO data)",    
-                                        "error": {
-                                            "errorCode": "101",
-                                            "errorInfo": "Invalid JSON Value Type For Discovery.. ex: {type: 'Biometric Device' or 'Finger' or 'Face' or 'Iris' } "
-                                        }
-                                    },
-                                    {
-                                        "specVersion": "MDS Spec version",
-                                        "data": {
-                                            "deviceCode": "Same as serialNo in digital ID",
-                                            "bioType": "Finger",
-                                            "digitalId": "Digital id of the device as per the Digital Id definition.",
-                                            "deviceServiceVersion": "MDS version",
-                                            "bioSubType": "Left MiddleFinger",
-                                            "purpose": "Auth or Registration",
-                                            "env": "Target environment",
-                                            "bioValue": "base64urlencoded extracted biometric (ISO format)",
-                                            "transactionId": "Unique transaction id sent in request",
-                                            "timestamp": "2019-02-15T10:01:57Z",
-                                            "requestedScore": "Floating point number to represent the minimum required score for the capture. This ranges from 0-100",
-                                            "qualityScore": "Floating point number representing the score for the current capture. This ranges from 0-100"
-                                        },
-                                        "hash": "sha256 in hex format in upper case (previous 'hash' + sha256 hash of the current biometric ISO data)",
-                                        "error": {
-                                            "errorCode": "101",
-                                            "errorInfo": "Invalid JSON Value Type For Discovery.. ex: {type: 'Biometric Device' or 'Finger' or 'Face' or 'Iris' }"
-                                        }
-                                    }
-                                ]
+                                "specVersion": "MDS Spec version",
+                                "data": {
+                                    "digitalId": "Digital id of the device as per the Digital Id definition..",
+                                    "bioType": "Biometric type",
+                                    "deviceCode": "Same as serialNo in digital ID",
+                                    "deviceServiceVersion": "MDS version",
+                                    "bioSubType": "Left IndexFinger",
+                                    "purpose": "Auth or Registration",
+                                    "env": "Target environment",
+                                    "bioValue": "base64urlencoded biometrics (ISO format)",
+                                    "transactionId": "Unique transaction id sent in request",
+                                    "timestamp": "2019-02-15T10:01:57Z",
+                                    "requestedScore": "Floating point number to represent the minimum required score for the capture. This ranges from 0-100.",
+                                    "qualityScore": "Floating point number representing the score for the current capture. This ranges from 0-100."
+                                },
+                                "hash": "sha256 in hex format in upper case (previous 'hash' + sha256 hash of the current biometric ISO data)",    
+                                "error": {
+                                    "errorCode": "101",
+                                    "errorInfo": "Invalid JSON Value Type For Discovery.. ex: {type: 'Biometric Device' or 'Finger' or 'Face' or 'Iris' } "
+                                }
+                            },
+                            {
+                                "specVersion": "MDS Spec version",
+                                "data": {
+                                    "deviceCode": "Same as serialNo in digital ID",
+                                    "bioType": "Finger",
+                                    "digitalId": "Digital id of the device as per the Digital Id definition.",
+                                    "deviceServiceVersion": "MDS version",
+                                    "bioSubType": "Left MiddleFinger",
+                                    "purpose": "Auth or Registration",
+                                    "env": "Target environment",
+                                    "bioValue": "base64urlencoded extracted biometric (ISO format)",
+                                    "transactionId": "Unique transaction id sent in request",
+                                    "timestamp": "2019-02-15T10:01:57Z",
+                                    "requestedScore": "Floating point number to represent the minimum required score for the capture. This ranges from 0-100",
+                                    "qualityScore": "Floating point number representing the score for the current capture. This ranges from 0-100"
+                                },
+                                "hash": "sha256 in hex format in upper case (previous 'hash' + sha256 hash of the current biometric ISO data)",
+                                "error": {
+                                    "errorCode": "101",
+                                    "errorInfo": "Invalid JSON Value Type For Discovery.. ex: {type: 'Biometric Device' or 'Finger' or 'Face' or 'Iris' }"
+                                }
                             }
                         ]
                     }

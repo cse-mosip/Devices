@@ -1,6 +1,7 @@
 require("dotenv").config();
 
 const mdsService = require("../services/mds.service");
+const utils = require("../helpers/util");
 
 const discover = async (req, res) => {
 
@@ -37,6 +38,9 @@ const discover = async (req, res) => {
 };
 
 const info = async (req, res) => {
+
+    utils.getConnectedPort();
+
     try {
         let info = await mdsService.deviceInfo(req.query.port);
         // console.log(info);

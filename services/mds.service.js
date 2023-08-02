@@ -14,16 +14,8 @@ const jwt = require('jsonwebtoken');
 
 const Constants = require('../helpers/constants');
 
+// data retrieval
 const findDevice = async (typeInfo, mds_port) => {
-
-    // try {
-    //     const res = await axios.post(Constatnts.BASE_PORT_URL + "device", typeInfo);
-    //     console.log(res);
-    //     return res;
-    // } catch (error) {
-    //     console.log(error);
-    //     throw error;
-    // }
 
     return axios({
         method: 'MOSIPDISC',
@@ -56,10 +48,10 @@ const deviceInfo = async (mds_port) => {
     })
     .catch((err) => {
         return err.message;
-        // throw err;
     });
 }
 
+// authentication
 // TODO: use jwt decrypt as a helper for bioInfo
 const capture = async (captureInfo) => {
 
@@ -76,6 +68,8 @@ const capture = async (captureInfo) => {
     });
 }
 
+
+// registration
 const rCapture = async (rCaptureInfo) => {
     return axios({
         method: 'RCAPTURE',
@@ -83,20 +77,27 @@ const rCapture = async (rCaptureInfo) => {
         data: rCaptureInfo
     })
     .then((res) => {
-        console.log(length(res.data.biometrics));
-        console.log(res.data.biometrics);
-        // const deviceRCaptureEncoded = res.data[0].deviceInfo;
-        // const error = res.data[0].error;
+        const fingerDataArray = [];
 
-        // const [headerEncoded, payloadEncoded] = deviceInfoEncoded.split('.');
+        res.data.biometrics.forEach(finger => {
+            const encodedData = finger.data;
+            const [headerEncoded, payloadEncoded] = encodedData.split('.');
 
-        // const header = JSON.parse(Buffer.from(headerEncoded, 'base64').toString('utf-8'));
-        // const payload = JSON.parse(Buffer.from(payloadEncoded, 'base64').toString('utf-8'));
-        // return { header, payload, error };
+            const header = JSON.parse(Buffer.from(headerEncoded, 'base64').toString('utf-8'));
+            const payload = JSON.parse(Buffer.from(payloadEncoded, 'base64').toString('utf-8'));
+
+            fingerDataArray.push({
+                specVersion: finger.specVersion,
+                data: payload,
+                hash: finger.hash,
+                error: finger.error
+            });
+        });
+
+        return fingerDataArray;
     })
     .catch((err) => {
         console.log(err.message);
-        // throw err;
     });
 }
 

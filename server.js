@@ -20,4 +20,11 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(docs));
 
 app.listen(port, () => {
     console.log(`Running on port ${port}`);
+
+    // const intervalObj = setInterval(() => {
+    //     console.log("infinite loop");
+    // }, 1500);
+
+
+
 });
