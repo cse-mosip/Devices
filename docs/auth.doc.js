@@ -9,101 +9,13 @@ const postCapture = {
                 schema: {
                     type: "object",
                     properties: {
-                        env: {
+                        deviceSubId: {
                             type: "string",
-                            description: "Target environment (Staging, Development, Pre-production, or Production)",
-                            example: "Staging"
+                            description: "Specific device Sub Id",
+                            example: "2"
                         },
-                        purpose: {
-                            type: "string",
-                            description: "Auth or Registration",
-                            example: "Auth"
-                        },
-                        specVersion: {
-                            type: "string",
-                            description: "Expected version of the MDS spec",
-                            example: "0.9.5"
-                        },
-                        timeout: {
-                            type: "integer",
-                            description: "Timeout for capture",
-                            example: 10000
-                        },
-                        captureTime: {
-                            type: "string",
-                            description: "Capture request time in ISO format",
-                            example: "2023-07-22T14:44:22Z"
-                        },
-                        transactionId: {
-                            type: "string",
-                            description: "Transaction Id for the current capture",
-                            example: "Trans123456"
-                        },
-                        bio: {
-                            type: "array",
-                            description: "Array of biometric data",
-                            items: {
-                                type: "object",
-                                properties: {
-                                    type: {
-                                        type: "string",
-                                        description: "Type of the biometric data",
-                                        example: "Finger"
-                                    },
-                                    count: {
-                                        type: "string",
-                                        description: "Finger/Iris count, in case of face max, is set to 1",
-                                        example: 1
-                                    },
-                                    bioSubType: {
-                                        type: "array",
-                                        description: "Array of subtypes",
-                                        items: {
-                                            type: "string",
-                                            example: "Left IndexFinger"
-                                        }
-                                    },
-                                    exception: {
-                                        type: "string",
-                                        description: "",
-                                        example: null
-                                    },
-                                    requestedScore: {
-                                        type: "string",
-                                        description: "Expected quality score that should match to complete a successful capture",
-                                        example: "40"
-                                    },
-                                    deviceId: {
-                                        type: "string",
-                                        description: "Internal Id",
-                                        example: "4857034"
-                                    },
-                                    deviceSubId: {
-                                        type: "string",
-                                        description: "Specific device Sub Id",
-                                        example: "0"
-                                    },
-                                    previousHash: {
-                                        type: "string",
-                                        description: "Hash of the previous block",
-                                        example: ""
-                                    }
-                                },
-                                required: ["type", "count", "bioSubType", "requestedScore", "deviceId"]
-                            }
-                        },
-                        customerOpts: {
-                            type: "object",
-                            description: "Custom options (if any)",
-                            example: null
-                        },
-                        domainUri: {
-                            type: "string",
-                            description: "URI of the auth server",
-                            example: "http://mosip.com"
-                        }
                     },
-                    required: ["env", "purpose", "specVersion", "timeout", "captureTime", "domainUri", "transactionId", "bio"]
+                    required: ["deviceSubId"]
                 }
             }
         }

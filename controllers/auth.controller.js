@@ -5,58 +5,92 @@ const mdsService = require("../services/mds.service");
 
 const capture = async (req, res) => {
 
-    let testBody = {
-        "env": "Staging",
-        "purpose": "Auth",
-        "specVersion": "0.9.5",
-        "timeout": 10000,
-        "captureTime": new Date().toISOString(),
-        "transactionId": "Trans123456",
-        "bio": [
-            {
-                "type": "Finger",
-                "count": "1",
-                "bioSubType": [
-                    
-                ],
-                "exception": null,
-                "requestedScore": "80",
-                "deviceId": "4856814",
-                "deviceSubId": "0",
-                "previousHash": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
-            }
-        ],
-        "customOpts": null,
-        "domainUri": ""
-    }
-
-    // info.data = { biometrics: [ { error: [Object] } ] }
-    // info.data.biometrics[0].error = { errorCode: '-31', errorInfo: 'Biometric capture timeout occurred.' }
-    // info.data.biometrics[0].error = { errorCode: '0', errorInfo: 'Success' }
-    
     try {
 
-        // let info = await mdsService.capture(req.body);
-        let info = await mdsService.capture(req.body);
-        // console.log(info.data.biometrics[0].error);
+        let info = await mdsService.deviceInfo(process.env.MDS_PORT_L0);
 
-        if (info.data.biometrics[0].error.errorInfo === "Success") {
+        const payload = info.payload;
+        const deviceStatus = payload.deviceStatus;
+        
+        if (deviceStatus === 'Ready'){
+            console.log('device ready');
+            
+            const deviceSubId = req.body.deviceSubId;
+            const requestedScore = 40;
+            const deviceId = payload.deviceId;
+            const captureTime = new Date().toISOString()
 
-            res.status(200).json({ 
-                success: true,
-                device: info.data.biometrics[0]
-            });
-        }
-        else {
+            const requestBody = {
+                "env": "Staging",
+                "purpose": "Authentication",
+                "specVersion": "0.9.5",
+                "timeout": 10000,
+                "captureTime": captureTime,
+                "transactionId": "Trans123456",
+                "bio": [
+                  {
+                    "type": "Finger",
+                    "count": "1",
+                    "bioSubType": [
+                      ""
+                    ],
+                    "exception": null,
+                    "requestedScore": requestedScore,
+                    "deviceId": deviceId,
+                    "deviceSubId": deviceSubId,
+                    "previousHash": ""
+                  }
+                ],
+                "customerOpts": null
+            }
 
-            res.status(400).json({ 
+            let data = await mdsService.rCapture(requestBody);
+            let fingerPrints = [];
+    
+            let error = false;
+    
+            for (let i = 0; i < data.length; i++){
+                let fingerObj = data[i].data;
+                let errorObj = data[i].error;
+
+                // if even one finger print has an error
+                if (errorObj.errorInfo !== 'Success'){
+                    error = true;
+                    break;
+                }
+
+                // if even one finger's quality is not enough
+                if (parseInt(fingerObj.requestedScore, 10) > parseInt(fingerObj.qualityScore, 10)){
+                    error = true;
+                    break;
+                }
+    
+                // decode bio values and get image buffer
+                let fingerPrintImageBuffer = utils.extractImage(fingerObj.bioValue);
+                fingerPrints.push({ buffer: fingerPrintImageBuffer, bioSubType: fingerObj.bioSubType });
+                // console.log(bioValue);
+    
+            }
+    
+            if (! error) {
+                console.log(fingerPrints);
+                res.status(200).json(fingerPrints);
+            }
+            else {
+                res.status(400).json({ 
+                    success: false,
+                    error: 'Hariyata angillakwath thiyaganna ba neda' 
+                });
+            }
+        }else{
+            res.status(500).json({ 
                 success: false,
-                error: 'Biometric capture timeout' 
+                error: 'device not ready'
             });
         }
+
     } 
     catch (error) {
-        
         res.status(500).json({ 
             success: false,
             error: error.message 

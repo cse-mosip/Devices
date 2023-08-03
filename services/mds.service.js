@@ -37,14 +37,19 @@ const deviceInfo = async (mds_port) => {
         url: Constants.BASE_URL + ":" + mds_port + "/info"
     })
     .then((res) => {
-        const deviceInfoEncoded = res.data[0].deviceInfo;
-        const error = res.data[0].error;
-
-        const [headerEncoded, payloadEncoded] = deviceInfoEncoded.split('.');
-
-        const header = JSON.parse(Buffer.from(headerEncoded, 'base64').toString('utf-8'));
-        const payload = JSON.parse(Buffer.from(payloadEncoded, 'base64').toString('utf-8'));
-        return { header, payload, error };
+        if (res.data.length !== 0){
+            const deviceInfoEncoded = res.data[0].deviceInfo;
+            const error = res.data[0].error;
+    
+            const [headerEncoded, payloadEncoded] = deviceInfoEncoded.split('.');
+    
+            const header = JSON.parse(Buffer.from(headerEncoded, 'base64').toString('utf-8'));
+            const payload = JSON.parse(Buffer.from(payloadEncoded, 'base64').toString('utf-8'));
+            return { header, payload, error };
+        }
+        else{
+            return { error: { errorInfo: 'device not connected' } }
+        }
     })
     .catch((err) => {
         return err.message;
