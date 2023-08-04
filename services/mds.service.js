@@ -47,11 +47,11 @@ const deviceInfo = async (mds_port) => {
 
 // authentication
 // TODO: use jwt decrypt as a helper for bioInfo
-const capture = async (captureInfo) => {
+const capture = async (captureInfo, mds_port) => {
 
     return axios({
         method: 'CAPTURE',
-        url: Constants.BASE_PORT_URL + "capture",
+        url: Constants.BASE_URL + ":" + mds_port + "/capture",
         data: captureInfo
     })
     .then((res) => {
@@ -64,10 +64,10 @@ const capture = async (captureInfo) => {
 
 
 // registration
-const rCapture = async (rCaptureInfo) => {
+const rCapture = async (rCaptureInfo, mds_port) => {
     return axios({
         method: 'RCAPTURE',
-        url: Constants.BASE_PORT_URL_2 + "capture",
+        url: Constants.BASE_URL + ":" + mds_port + "/capture",
         data: rCaptureInfo
     })
     .then((res) => {
