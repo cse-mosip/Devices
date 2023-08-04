@@ -42,6 +42,7 @@ const info = async (req, res) => {
     try {
 
         let portInfo = await utils.checkPort();
+        // console.log(portInfo);
 
         if (portInfo.error.errorCode === '0') {
 

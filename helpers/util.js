@@ -20,7 +20,7 @@ const extractImage = (bioValue) => {
     return imageBuffer;
 }
 
-//checks the connected port
+//checks the ports for the device from 4500 to 4510
 const checkPort = async () => {
 
     let device;

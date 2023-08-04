@@ -1,16 +1,6 @@
 const getInfo = {
     tags: ["Data"],
     description: "The device information API would be used to identify the MOSIP-compliant devices and their status by the applications.",
-    parameters: [
-        {
-          name: "port",
-          in: "query",
-          type: "integer",
-          required: true,
-          example: 4501,
-          description: "Should be either 4501(for L0 devices) or 4502(for L1 devices)"
-        }
-    ],
     responses: {
         200: {
             description: "OK",
@@ -46,6 +36,9 @@ const getInfo = {
         },
         400: {
             description: "Bad Request"
+        },
+        500: {
+            description: "Custom Error Code"
         }
     }
 }
