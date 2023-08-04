@@ -50,50 +50,41 @@ const rCapture = async (req, res) => {
                     "customerOpts": null
                 }
 
-                let data = await mdsService.rCapture(requestBody, port);
+                const result = await mdsService.rCapture(requestBody, port);
+                // console.log(result);
+                
+                if (result.error.errorCode !== '0'){
+                    throw new Error(result.error.erroInfo);
+                }
+
+                const fingerDataArray = result.data;
+                // console.log(fingerDataArray);
+                
                 let fingerPrints = [];
 
-                let error = false;
-
-                for (let i = 0; i < data.length; i++) {
-                    let fingerObj = data[i].data;
-                    let errorObj = data[i].error;
-
-                    // if even one finger print has an error
-                    if (errorObj.errorInfo !== 'Success') {
-                        error = true;
-                        break;
-                    }
-
-                    // if even one finger's quality is not enough
-                    if (parseInt(fingerObj.requestedScore, 10) > parseInt(fingerObj.qualityScore, 10)) {
-                        error = true;
-                        break;
-                    }
+                for (let i = 0; i < fingerDataArray.length; i++) {
+                    let fingerObj = fingerDataArray[i].payload;
 
                     // decode bio values and get image buffer
                     let fingerPrintImageBuffer = utils.extractImage(fingerObj.bioValue);
-                    fingerPrints.push({ buffer: fingerPrintImageBuffer, bioSubType: fingerObj.bioSubType });
-                    // console.log(bioValue);
 
+                    if (fingerPrintImageBuffer.error.errorCode !== '0'){
+                        throw new Error(fingerPrintImageBuffer.error.errorInfo);
+                    }
+
+                    fingerPrints.push({ buffer: fingerPrintImageBuffer.buffer, bioSubType: fingerObj.bioSubType });
                 }
 
-                if (!error) {
-                    console.log(fingerPrints);
-                    res.status(200).json(fingerPrints);
-                }
-                else {
-                    res.status(400).json({
-                        success: false,
-                        error: 'Hariyata angillakwath thiyaganna ba neda'
-                    });
-                }
+                // console.log(fingerPrints);
+
+                res.status(200).json({
+                    success: true,
+                    error: "",
+                    data: fingerPrints
+                });
             }
             else {
-                res.status(500).json({
-                    success: false,
-                    error: 'device not ready'
-                });
+                throw new Error("Device not ready");
             }
         }
         else {

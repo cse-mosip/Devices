@@ -63,7 +63,7 @@ const capture = async (captureInfo, mds_port) => {
 }
 
 
-// registration
+// used for both registration and authentication
 const rCapture = async (rCaptureInfo, mds_port) => {
     return axios({
         method: 'RCAPTURE',
@@ -83,7 +83,7 @@ const rCapture = async (rCaptureInfo, mds_port) => {
     
                 fingerDataArray.push({
                     specVersion: finger.specVersion,
-                    data: payload,
+                    payload: payload,
                     hash: finger.hash,
                     error: finger.error
                 });
@@ -93,11 +93,11 @@ const rCapture = async (rCaptureInfo, mds_port) => {
                 throw new Error("Capture Error");
             }
         });
-        return fingerDataArray;
+        return { data: fingerDataArray, error: { errorCode: '0', errorInfo: 'Success' } };
 
     })
     .catch((err) => {
-        return { error: { errorCode: '500', errorInfo: err.message } };
+        return { data: [], error: { errorCode: '500', errorInfo: err.message } };
     });
 }
 

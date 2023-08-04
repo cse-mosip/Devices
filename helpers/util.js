@@ -6,18 +6,28 @@ const mdsService = require("../services/mds.service");
 // Returns a Buffer object with the raw bytes of a jpg image of a fingerprint.
 // run pip install pillow beforehand
 const extractImage = (bioValue) => {
-    binary = Buffer.from(bioValue, "base64");
-    jp2ImageData = binary.slice(binary.indexOf(Buffer.from([0x00,0x00,0x00,0x0C,0x6A,0x50,0x20,0x20,0x0D,0x0A,0x87,0x0A])));
-    fs.writeFileSync(`./helpers/finger.jp2`, jp2ImageData);
-    const result = execSync("python helpers/imageConverter.py");
-    console.log(result.toString("utf8"));
-    let imageBuffer = fs.readFileSync(`./helpers/finger.jpg`);
-    // let filePathName = `./helpers/${name}.jpg`;
-    // fs.renameSync('./helpers/finger.jpg', filePathName);
-    fs.unlinkSync(`./helpers/finger.jp2`);
-    fs.unlinkSync(`./helpers/finger.jpg`);
 
-    return imageBuffer;
+    try{
+        binary = Buffer.from(bioValue, "base64");
+        jp2ImageData = binary.slice(binary.indexOf(Buffer.from([0x00,0x00,0x00,0x0C,0x6A,0x50,0x20,0x20,0x0D,0x0A,0x87,0x0A])));
+        fs.writeFileSync(`./helpers/finger.jp2`, jp2ImageData);
+        const result = execSync("python helpers/imageConverter.py");
+
+        console.log(result.toString("utf8"));
+
+        let imageBuffer = fs.readFileSync(`./helpers/finger.jpg`);
+
+        fs.unlinkSync(`./helpers/finger.jp2`);
+        fs.unlinkSync(`./helpers/finger.jpg`);
+
+        // console.log(imageBuffer);
+
+        return { buffer: imageBuffer, error: { errorCode: '0', errorInfo: 'Success' } };
+        
+    }catch(error){
+        return { buffer: "", error: { errorCode: '500', errorInfo: error.message } }
+    }
+
 }
 
 //checks the ports for the device from 4500 to 4510

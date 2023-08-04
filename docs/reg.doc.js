@@ -11,7 +11,7 @@ const postRCapture = {
                         deviceSubId: {
                             type: "string",
                             description: "Specific device Sub Id",
-                            example: "2"
+                            example: "3"
                         },
                     },
                     required: ["deviceSubId"]
@@ -79,6 +79,9 @@ const postRCapture = {
         },
         400: {
             description: "Bad Request"
+        },
+        500: {
+            description: "Custom Status Code"
         }
     }
 }
