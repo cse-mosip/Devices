@@ -1,6 +1,7 @@
 var fs = require('fs');
 const net = require('net');
 const execSync = require("child_process").execSync;
+const mdsService = require("../services/mds.service");
 
 // Returns a Buffer object with the raw bytes of a jpg image of a fingerprint.
 // run pip install pillow beforehand
@@ -19,37 +20,37 @@ const extractImage = (bioValue) => {
     return imageBuffer;
 }
 
-const checkPortsInRange = async (startPort, endPort) => {
-    const usedPorts = [];
+//checks the connected port
+const checkPort = async () => {
 
-    for (let port = startPort; port <= endPort; port++){
-        const server = net.createServer();
-        console.log("checking for port " + port);
-
-        try{
-            await new Promise((resolve, reject) => {
-                server.once('error', (err) => {
-                    if (err.code === 'EADDRINUSE'){
-                        usedPorts.push(port);
-                    }
-                    console.log("port " + port + " is not in use");
-                    resolve();
-                });
-
-                server.listen(port, '127.0.0.1', () => {
-                    server.close();
-                    resolve();
-                });
-            });
-        }catch (err){
-            consolee.log(err.message);
-        }
-
-        return usedPorts;
+    let device;
+    let testBody = {
+        "type": "Biometric Device"
     }
+
+    for(let port = 4500; port <= 4510; port++){
+
+        try {
+
+            device = await mdsService.findDevice(testBody, port);
+
+            if (device.data[0].deviceStatus === "Ready") {
+
+                console.log("Connected port " + port);
+                return {error: {errorCode: '0', errorInfo: "Success"}, port: port};
+            }
+            else{
+                console.log(port + ":Port not Connected");
+            }
+        } 
+        catch (error) {
+            console.log(error.message);
+        }
+    }
+    return {error: {errorCode: '500', errorInfo: "Device not Connected"}}
 }
 
 module.exports = { 
     extractImage,
-    checkPortsInRange
+    checkPort
 };
