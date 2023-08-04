@@ -15,24 +15,24 @@ const discover = async (req, res) => {
 
         if (device.data[0].deviceStatus === "Ready") {
 
-            res.status(200).json({ 
+            res.status(200).json({
                 success: true,
                 device: device.data[0]
             });
         }
         else {
 
-            res.status(400).json({ 
+            res.status(400).json({
                 success: false,
-                error: 'Device not ready' 
+                error: 'Device not ready'
             });
         }
-    } 
+    }
     catch (error) {
-        
-        res.status(500).json({ 
+
+        res.status(500).json({
             success: false,
-            error: error.message 
+            error: error.message
         });
     }
 };
@@ -40,21 +40,31 @@ const discover = async (req, res) => {
 const info = async (req, res) => {
 
     try {
-        let info = await mdsService.deviceInfo(process.env.MDS_PORT_L1 || req.query.port);
-        // console.log(info);
 
-        if (info.error.errorCode === '0'){
-            res.status(200).send({
-                deviceInfo: info.payload,
-                error: info.error
-            });
+        let portInfo = await utils.checkPort();
+
+        if (portInfo.error.errorCode === '0') {
+
+            let port = portInfo.port;
+            let info = await mdsService.deviceInfo(port);
+            // console.log(info);
+
+            if (info.error.errorCode === '0') {
+                res.status(200).send({
+                    deviceInfo: info.payload,
+                    error: info.error
+                });
+            }
+            else {
+                throw new Error(info.error.errorInfo);
+            }
         }
         else{
-            throw new Error(info.error.errorInfo);
+            throw new Error(portInfo.error.errorInfo);
         }
-        
-    } catch (error) {
-        res.status(500).json({ 
+    } 
+    catch (error) {
+        res.status(500).json({
             success: false,
             error: error.message
         });
