@@ -1,4 +1,5 @@
 var fs = require('fs');
+const net = require('net');
 const execSync = require("child_process").execSync;
 
 // Returns a Buffer object with the raw bytes of a jpg image of a fingerprint.
@@ -18,34 +19,37 @@ const extractImage = (bioValue) => {
     return imageBuffer;
 }
 
+const checkPortsInRange = async (startPort, endPort) => {
+    const usedPorts = [];
 
-// no use yet
-const getConnectedPort = async () => {
-    const sp = require('serialport');
+    for (let port = startPort; port <= endPort; port++){
+        const server = net.createServer();
+        console.log("checking for port " + port);
 
-    // List available ports
-    sp.SerialPort.list()
-    .then(ports => {
-        console.log(ports);
-        // Loop through the ports to find the fingerprint device
-        ports.forEach(port => {
-        if (port.manufacturer && port.manufacturer.includes('Mantra')) {
-            // Port with the fingerprint device found
-            console.log('Fingerprint device found on port:', port.path);
+        try{
+            await new Promise((resolve, reject) => {
+                server.once('error', (err) => {
+                    if (err.code === 'EADDRINUSE'){
+                        usedPorts.push(port);
+                    }
+                    console.log("port " + port + " is not in use");
+                    resolve();
+                });
 
-            // Now you can use this port path to send requests to the fingerprint service
-            // For example, you can store this port path in a variable and use it later when needed.
-            const fingerprintDevicePort = port.path;
-            // Perform further actions with the fingerprintDevicePort, like connecting to the service.
+                server.listen(port, '127.0.0.1', () => {
+                    server.close();
+                    resolve();
+                });
+            });
+        }catch (err){
+            consolee.log(err.message);
         }
-        });
-    })
-    .catch(err => {
-        console.error('Error listing ports:', err);
-    });
+
+        return usedPorts;
+    }
 }
 
 module.exports = { 
     extractImage,
-    getConnectedPort
+    checkPortsInRange
 };

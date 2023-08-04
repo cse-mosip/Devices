@@ -1,16 +1,4 @@
 const axios = require('axios');
-// const jwksClient = require('jwks-rsa');
-const jwt = require('jsonwebtoken');
-// const client = jwksClient({
-//     jwksUri: 'https://sandrino.auth0.com/.well-known/jwks.json'
-// });
-
-// function getKey(header, callback){
-//     client.getSigningKey(header.kid, function(err, key) {
-//         var signingKey = key.getPublicKey();
-//         callback(null, signingKey);
-//     });
-// }
 
 const Constants = require('../helpers/constants');
 
@@ -37,6 +25,7 @@ const deviceInfo = async (mds_port) => {
         url: Constants.BASE_URL + ":" + mds_port + "/info"
     })
     .then((res) => {
+        console.log(res.data);
         if (res.data.length !== 0){
             const deviceInfoEncoded = res.data[0].deviceInfo;
             const error = res.data[0].error;
@@ -82,32 +71,37 @@ const rCapture = async (rCaptureInfo) => {
         data: rCaptureInfo
     })
     .then((res) => {
+        // console.log(res.data.biometrics);
         const fingerDataArray = [];
 
         res.data.biometrics.forEach(finger => {
-            const encodedData = finger.data;
-            const [headerEncoded, payloadEncoded] = encodedData.split('.');
+            if (finger.error.errorCode === '0'){
+                const encodedData = finger.data;
+                const [headerEncoded, payloadEncoded] = encodedData.split('.');
+    
+                const header = JSON.parse(Buffer.from(headerEncoded, 'base64').toString('utf-8'));
+                const payload = JSON.parse(Buffer.from(payloadEncoded, 'base64').toString('utf-8'));
+    
+                fingerDataArray.push({
+                    specVersion: finger.specVersion,
+                    data: payload,
+                    hash: finger.hash,
+                    error: finger.error
+                });
 
-            const header = JSON.parse(Buffer.from(headerEncoded, 'base64').toString('utf-8'));
-            const payload = JSON.parse(Buffer.from(payloadEncoded, 'base64').toString('utf-8'));
-
-            fingerDataArray.push({
-                specVersion: finger.specVersion,
-                data: payload,
-                hash: finger.hash,
-                error: finger.error
-            });
+            }
+            else{
+                fingerDataArray.push({
+                    error: finger.error
+                });
+            }
         });
-
         return fingerDataArray;
+
     })
     .catch((err) => {
         console.log(err.message);
     });
-}
-
-const stream = async () => {
-
 }
 
 module.exports = {
@@ -115,5 +109,4 @@ module.exports = {
     deviceInfo,
     capture,
     rCapture,
-    stream,
 };

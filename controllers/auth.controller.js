@@ -1,13 +1,14 @@
 require("dotenv").config();
 
+const utils = require('../helpers/util');
 
 const mdsService = require("../services/mds.service");
 
 const capture = async (req, res) => {
 
     try {
-
-        let info = await mdsService.deviceInfo(process.env.MDS_PORT_L0);
+        let info = await mdsService.deviceInfo(process.env.MDS_PORT_L0 || 4501);
+        console.log(info);
 
         const payload = info.payload;
         const deviceStatus = payload.deviceStatus;
@@ -22,9 +23,9 @@ const capture = async (req, res) => {
 
             const requestBody = {
                 "env": "Staging",
-                "purpose": "Authentication",
+                "purpose": "Registration",
                 "specVersion": "0.9.5",
-                "timeout": 10000,
+                "timeout": 1000,
                 "captureTime": captureTime,
                 "transactionId": "Trans123456",
                 "bio": [
@@ -45,41 +46,51 @@ const capture = async (req, res) => {
             }
 
             let data = await mdsService.rCapture(requestBody);
-            let fingerPrints = [];
+            
+            if (data[0].error.errorCode === '0'){
+                let fingerPrints = [];
+        
+                let error = false;
+        
+                for (let i = 0; i < data.length; i++){
+                    let fingerObj = data[i].data;
+                    let errorObj = data[i].error;
     
-            let error = false;
+                    // if even one finger print has an error
+                    if (errorObj.errorInfo !== 'Success'){
+                        error = true;
+                        break;
+                    }
     
-            for (let i = 0; i < data.length; i++){
-                let fingerObj = data[i].data;
-                let errorObj = data[i].error;
-
-                // if even one finger print has an error
-                if (errorObj.errorInfo !== 'Success'){
-                    error = true;
-                    break;
+                    // if even one finger's quality is not enough
+                    // This is handled from the device itself, therefore not needed. If quality is not enough, it will timeout
+                    if (parseInt(fingerObj.requestedScore, 10) > parseInt(fingerObj.qualityScore, 10)){
+                        error = true;
+                        break;
+                    }
+        
+                    // decode bio values and get image buffer
+                    let fingerPrintImageBuffer = utils.extractImage(fingerObj.bioValue);
+                    fingerPrints.push({ buffer: fingerPrintImageBuffer, bioSubType: fingerObj.bioSubType });
+                    // console.log(bioValue);
+        
                 }
-
-                // if even one finger's quality is not enough
-                if (parseInt(fingerObj.requestedScore, 10) > parseInt(fingerObj.qualityScore, 10)){
-                    error = true;
-                    break;
+        
+                if (! error) {
+                    console.log(fingerPrints);
+                    res.status(200).json(fingerPrints);
                 }
-    
-                // decode bio values and get image buffer
-                let fingerPrintImageBuffer = utils.extractImage(fingerObj.bioValue);
-                fingerPrints.push({ buffer: fingerPrintImageBuffer, bioSubType: fingerObj.bioSubType });
-                // console.log(bioValue);
-    
+                else {
+                    res.status(400).json({ 
+                        success: false,
+                        error: 'Hariyata angillakwath thiyaganna ba neda' 
+                    });
+                }
             }
-    
-            if (! error) {
-                console.log(fingerPrints);
-                res.status(200).json(fingerPrints);
-            }
-            else {
-                res.status(400).json({ 
+            else{
+                res.status(500).json({ 
                     success: false,
-                    error: 'Hariyata angillakwath thiyaganna ba neda' 
+                    error: data[0].error.errorInfo
                 });
             }
         }else{

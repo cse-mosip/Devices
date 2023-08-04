@@ -39,11 +39,8 @@ const discover = async (req, res) => {
 
 const info = async (req, res) => {
 
-    utils.getConnectedPort();
-
     try {
-        let info = await mdsService.deviceInfo(req.query.port);
-        // console.log(info);
+        let info = await mdsService.deviceInfo(process.env.MDS_PORT_L0 || req.query.port);
 
         if (info.error.errorCode === '0'){
             res.status(200).send({
@@ -52,11 +49,10 @@ const info = async (req, res) => {
             });
         }
         else{
-            res.status(400).send(info.error);
+            throw new Error(info.error.errorInfo);
         }
         
     } catch (error) {
-        // console.log(error.message);
         res.status(400).json({ 
             success: false,
             error: error.message 

@@ -1,5 +1,6 @@
 // environmental variables
 require('dotenv').config();
+const utils = require('./helpers/util');
 
 const port = process.env.PORT || 5000;
 
@@ -21,15 +22,16 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(docs));
 app.listen(port, () => {
     console.log(`Running on port ${port}`);
 
-    let count = 0;
-
-    // const intervalObj = setInterval(() => {
-    //     console.log("infinite loop");
-    //     count += 1;
-    // }, 1500);
-
-    // if (count > 4){
-    //     clearInterval(intervalObj);
-    // }
+    utils.checkPortsInRange(4500, 4510)
+    .then((usedPorts) => {
+        if (usedPorts.length > 0) {
+        console.log('Used ports:', usedPorts);
+        } else {
+        console.log('All ports in the range are available.');
+        }
+    })
+    .catch((err) => {
+        console.error('Error:', err);
+    });
 
 });

@@ -26,6 +26,7 @@ const postCapture = {
             content: {
                 "application/json": {
                     schema: {
+                        description: "This is the decoded capture information for reference. NOT the actual returned value from the request",
                         type: "array",
                         example: {
                             "env": "Target environment",

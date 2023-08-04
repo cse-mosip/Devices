@@ -1,6 +1,4 @@
 require("dotenv").config();
-const path = require('path');
-const fs = require('fs');
 
 const utils = require('../helpers/util');
 
@@ -10,7 +8,7 @@ const rCapture = async (req, res) => {
     
     try {
 
-        let info = await mdsService.deviceInfo(process.env.MDS_PORT_L0);
+        let info = await mdsService.deviceInfo(process.env.MDS_PORT_L0 || 4501);
 
         const payload = info.payload;
         const deviceStatus = payload.deviceStatus;
