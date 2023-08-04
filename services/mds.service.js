@@ -25,7 +25,7 @@ const deviceInfo = async (mds_port) => {
         url: Constants.BASE_URL + ":" + mds_port + "/info"
     })
     .then((res) => {
-        console.log(res.data);
+        // console.log(res.data[0]);
         if (res.data.length !== 0){
             const deviceInfoEncoded = res.data[0].deviceInfo;
             const error = res.data[0].error;
@@ -37,11 +37,11 @@ const deviceInfo = async (mds_port) => {
             return { header, payload, error };
         }
         else{
-            return { error: { errorInfo: 'device not connected' } }
+            throw new Error("device not connected");
         }
     })
     .catch((err) => {
-        return err.message;
+        return { error: { errorCode: '106', errorInfo: err.message } };
     });
 }
 

@@ -41,6 +41,7 @@ const info = async (req, res) => {
 
     try {
         let info = await mdsService.deviceInfo(process.env.MDS_PORT_L0 || req.query.port);
+        console.log(info);
 
         if (info.error.errorCode === '0'){
             res.status(200).send({
@@ -53,9 +54,9 @@ const info = async (req, res) => {
         }
         
     } catch (error) {
-        res.status(400).json({ 
+        res.status(500).json({ 
             success: false,
-            error: error.message 
+            error: error.message
         });
     }
 }

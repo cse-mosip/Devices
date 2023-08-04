@@ -8,7 +8,7 @@ const capture = async (req, res) => {
 
     try {
         let info = await mdsService.deviceInfo(process.env.MDS_PORT_L0 || 4501);
-        console.log(info);
+        // console.log(info);
 
         const payload = info.payload;
         const deviceStatus = payload.deviceStatus;
