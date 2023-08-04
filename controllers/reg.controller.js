@@ -8,10 +8,16 @@ const rCapture = async (req, res) => {
     
     try {
 
-        let info = await mdsService.deviceInfo(process.env.MDS_PORT_L0 || 4501);
+        let info = await mdsService.deviceInfo(process.env.MDS_PORT_L1 || 4501);
+
+        if (info.error.errorCode !== '0'){
+            throw new Error(info.error.errorInfo);
+        }
 
         const payload = info.payload;
         const deviceStatus = payload.deviceStatus;
+
+        // console.log(payload);
         
         if (deviceStatus === 'Ready'){
             console.log('device ready');
@@ -19,7 +25,9 @@ const rCapture = async (req, res) => {
             const deviceSubId = req.body.deviceSubId;
             const requestedScore = 40;
             const deviceId = payload.deviceId;
-            const captureTime = new Date().toISOString()
+            const captureTime = new Date().toISOString();
+
+            // console.log(deviceId, captureTime, deviceSubId);
 
             const requestBody = {
                 "env": "Staging",
@@ -46,6 +54,11 @@ const rCapture = async (req, res) => {
             }
 
             let data = await mdsService.rCapture(requestBody);
+            // console.log(data);
+            if (data.error.errorCode !== '0'){
+                throw new Error(data.error.errorInfo);
+            }
+            
             let fingerPrints = [];
     
             let error = false;
@@ -74,7 +87,7 @@ const rCapture = async (req, res) => {
             }
     
             if (! error) {
-                console.log(fingerPrints);
+                // console.log(fingerPrints);
                 res.status(200).json(fingerPrints);
             }
             else {
@@ -84,10 +97,8 @@ const rCapture = async (req, res) => {
                 });
             }
         }else{
-            res.status(500).json({ 
-                success: false,
-                error: 'device not ready'
-            });
+            console.log('Device not ready');
+            throw new Error('Device not ready');
         }
 
     } 

@@ -41,7 +41,7 @@ const deviceInfo = async (mds_port) => {
         }
     })
     .catch((err) => {
-        return { error: { errorCode: '106', errorInfo: err.message } };
+        return { error: { errorCode: '500', errorInfo: err.message } };
     });
 }
 
@@ -67,11 +67,10 @@ const capture = async (captureInfo) => {
 const rCapture = async (rCaptureInfo) => {
     return axios({
         method: 'RCAPTURE',
-        url: Constants.BASE_PORT_URL_2 + "capture",
+        url: Constants.BASE_PORT_URL + "capture",
         data: rCaptureInfo
     })
     .then((res) => {
-        // console.log(res.data.biometrics);
         const fingerDataArray = [];
 
         res.data.biometrics.forEach(finger => {
@@ -91,16 +90,14 @@ const rCapture = async (rCaptureInfo) => {
 
             }
             else{
-                fingerDataArray.push({
-                    error: finger.error
-                });
+                throw new Error("Capture Error");
             }
         });
         return fingerDataArray;
 
     })
     .catch((err) => {
-        console.log(err.message);
+        return { error: { errorCode: '500', errorInfo: err.message } };
     });
 }
 

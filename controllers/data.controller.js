@@ -40,8 +40,8 @@ const discover = async (req, res) => {
 const info = async (req, res) => {
 
     try {
-        let info = await mdsService.deviceInfo(process.env.MDS_PORT_L0 || req.query.port);
-        console.log(info);
+        let info = await mdsService.deviceInfo(process.env.MDS_PORT_L1 || req.query.port);
+        // console.log(info);
 
         if (info.error.errorCode === '0'){
             res.status(200).send({
