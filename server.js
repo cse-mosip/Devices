@@ -2,7 +2,7 @@
 require('dotenv').config();
 const utils = require('./helpers/util');
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 7291;
 
 //swagger API testing
 const swaggerUI = require('swagger-ui-express');
