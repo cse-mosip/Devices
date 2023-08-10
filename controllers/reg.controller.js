@@ -4,7 +4,7 @@ const utils = require('../helpers/util');
 
 const mdsService = require("../services/mds.service");
 
-const rCapture = async (req, res) => {
+const capture = async (deviceSubId) => {
 
     try {
 
@@ -21,7 +21,7 @@ const rCapture = async (req, res) => {
             if (deviceStatus === 'Ready') {
                 console.log('device ready');
 
-                const deviceSubId = req.body.deviceSubId;
+                // const deviceSubId = deviceSubId;
                 const requestedScore = 40;
                 const deviceId = payload.deviceId;
                 const captureTime = new Date().toISOString()
@@ -75,13 +75,14 @@ const rCapture = async (req, res) => {
                     fingerPrints.push({ buffer: fingerPrintImageBuffer.buffer, bioSubType: fingerObj.bioSubType });
                 }
 
-                // console.log(fingerPrints);
+                console.log(fingerPrints);
+                return fingerPrints;
 
-                res.status(200).json({
-                    success: true,
-                    error: "",
-                    data: fingerPrints
-                });
+                // res.status(200).json({
+                //     success: true,
+                //     error: "",
+                //     data: fingerPrints
+                // });
             }
             else {
                 throw new Error("Device not ready");
@@ -92,15 +93,23 @@ const rCapture = async (req, res) => {
         }
     }
     catch (error) {
-        res.status(500).json({
-            success: false,
-            error: error.message
-        });
+        // res.status(500).json({
+        //     success: false,
+        //     error: error.message
+        // });
     }
+
+}
+
+const rCapture = async (req, res) => {
+
+    
+    
 };
 
 module.exports = {
     rCapture,
+    capture
 }
 
 
