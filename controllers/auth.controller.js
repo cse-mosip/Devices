@@ -14,7 +14,6 @@ const capture = async (req, res) => {
 
             let port = portInfo.port;
             let info = await mdsService.deviceInfo(port);
-            // console.log(info);
 
             const payload = info.payload;
             const deviceStatus = payload.deviceStatus;
@@ -31,7 +30,7 @@ const capture = async (req, res) => {
                     "env": "Staging",
                     "purpose": "Registration",
                     "specVersion": "0.9.5",
-                    "timeout": 1000,
+                    "timeout": 10000,
                     "captureTime": captureTime,
                     "transactionId": "Trans123456",
                     "bio": [
@@ -51,60 +50,41 @@ const capture = async (req, res) => {
                     "customerOpts": null
                 }
 
-                let data = await mdsService.rCapture(requestBody, port);
-
-                if (data[0].error.errorCode === '0') {
-                    let fingerPrints = [];
-
-                    let error = false;
-
-                    for (let i = 0; i < data.length; i++) {
-                        let fingerObj = data[i].data;
-                        let errorObj = data[i].error;
-
-                        // if even one finger print has an error
-                        if (errorObj.errorInfo !== 'Success') {
-                            error = true;
-                            break;
-                        }
-
-                        // if even one finger's quality is not enough
-                        // This is handled from the device itself, therefore not needed. If quality is not enough, it will timeout
-                        if (parseInt(fingerObj.requestedScore, 10) > parseInt(fingerObj.qualityScore, 10)) {
-                            error = true;
-                            break;
-                        }
-
-                        // decode bio values and get image buffer
-                        let fingerPrintImageBuffer = utils.extractImage(fingerObj.bioValue);
-                        fingerPrints.push({ buffer: fingerPrintImageBuffer, bioSubType: fingerObj.bioSubType });
-                        // console.log(bioValue);
-
-                    }
-
-                    if (!error) {
-                        console.log(fingerPrints);
-                        res.status(200).json(fingerPrints);
-                    }
-                    else {
-                        res.status(400).json({
-                            success: false,
-                            error: 'Hariyata angillakwath thiyaganna ba neda'
-                        });
-                    }
+                const result = await mdsService.rCapture(requestBody, port);
+                // console.log(result);
+                
+                if (result.error.errorCode !== '0'){
+                    throw new Error(result.error.erroInfo);
                 }
-                else {
-                    res.status(500).json({
-                        success: false,
-                        error: data[0].error.errorInfo
-                    });
+
+                const fingerDataArray = result.data;
+                // console.log(fingerDataArray);
+                
+                let fingerPrints = [];
+
+                for (let i = 0; i < fingerDataArray.length; i++) {
+                    let fingerObj = fingerDataArray[i].payload;
+
+                    // decode bio values and get image buffer
+                    let fingerPrintImageBuffer = utils.extractImage(fingerObj.bioValue);
+
+                    if (fingerPrintImageBuffer.error.errorCode !== '0'){
+                        throw new Error(fingerPrintImageBuffer.error.errorInfo);
+                    }
+
+                    fingerPrints.push({ buffer: fingerPrintImageBuffer.buffer, bioSubType: fingerObj.bioSubType });
                 }
+
+                // console.log(fingerPrints);
+
+                res.status(200).json({
+                    success: true,
+                    error: "",
+                    data: fingerPrints
+                });
             }
             else {
-                res.status(500).json({
-                    success: false,
-                    error: 'device not ready'
-                });
+                throw new Error("Device not ready");
             }
         }
         else {
