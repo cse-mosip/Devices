@@ -1,8 +1,12 @@
 // environmental variables
 require('dotenv').config();
 const utils = require('./helpers/util');
+const regController = require('./controllers/reg.controller');
 
-const port = process.env.PORT || 7291;
+const { Server } = require("socket.io");
+const http = require('http');
+
+const port = process.env.PORT || 1729;
 
 //swagger API testing
 const swaggerUI = require('swagger-ui-express');
@@ -17,8 +21,25 @@ const docs = swaggerJsDoc(swaggerDocs);
 const appMaker = require('./app');
 const app = appMaker.makeApp();
 
+const server = http.createServer(app);
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(docs));
+const io = new Server(server, {
+    cors: {
+        origin: "*"
+    }
+});
 
-app.listen(port, () => {
+io.on('connection', (socket) => {
+    console.log('a user connected');
+
+    socket.on('fingerprint', async (deviceSubId) => {
+
+        const data = await regController.capture(deviceSubId);
+
+        io.emit('fingerResponse', data);
+    });
+});
+
+server.listen(port, () => {
     console.log(`Running on port ${port}`);
 });
