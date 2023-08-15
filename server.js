@@ -6,7 +6,7 @@ const regController = require('./controllers/reg.controller');
 const { Server } = require("socket.io");
 const http = require('http');
 
-const port = process.env.PORT || 1729;
+const port = process.env.PORT || 7291;
 
 //swagger API testing
 const swaggerUI = require('swagger-ui-express');
@@ -36,7 +36,7 @@ io.on('connection', (socket) => {
 
         const data = await regController.capture(deviceSubId);
 
-        io.emit('fingerResponse', data);
+        io.emit('fingerprintData', data);
     });
 });
 
