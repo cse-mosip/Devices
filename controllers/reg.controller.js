@@ -76,13 +76,19 @@ const capture = async (deviceSubId) => {
                 }
 
                 console.log(fingerPrints);
-                return fingerPrints;
+                // return fingerPrints;
 
                 // res.status(200).json({
                 //     success: true,
                 //     error: "",
                 //     data: fingerPrints
                 // });
+
+                return {
+                    success: true,
+                    error: "",
+                    data: fingerPrints
+                }
             }
             else {
                 throw new Error("Device not ready");
@@ -97,6 +103,10 @@ const capture = async (deviceSubId) => {
         //     success: false,
         //     error: error.message
         // });
+        return {
+            success: false,
+            error: error.message
+        }
     }
 
 }
