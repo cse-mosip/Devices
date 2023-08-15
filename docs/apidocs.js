@@ -2,7 +2,7 @@ const dataRouteDocs = require('./data.doc');
 const authRouteDocs = require('./auth.doc');
 const regRouteDocs = require('./reg.doc');
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 7291;
 
 const documentation = {
     definition: {
